@@ -28,35 +28,50 @@ public class RespawnOnExitCollider : MonoBehaviour
         }
     }
 
-    // Called when an object exits the collider attached to this script
-    //score traffic
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            // Respawn the player after a delay
-            StartCoroutine(RespawnAfterDelay(other.gameObject));
-            Debug.Log("Player out!!");
-            SoundManager.instance.PlaySFX("playerDrop");
-            
-        }
-        else if (other.CompareTag("Stuff"))
-        {
-            // Update the score and log a message to the console
-            gc.UpdateScore(-10);
-            Debug.Log("Stuff out!!");
-            SoundManager.instance.PlaySFX("fail");
+   // The counter for the number of times garbage has exited the collider
+   private int garbageExitCounter = 0;
+   
+   // Called when an object exits the collider attached to this script
+   private void OnTriggerExit(Collider other)
+   {
+       if (other.CompareTag("Player"))
+       {
+           // Respawn the player after a delay
+           StartCoroutine(RespawnAfterDelay(other.gameObject));
+           Debug.Log("Player out!!");
+           SoundManager.instance.PlaySFX("playerDrop");
+       }
+       else if (other.CompareTag("Stuff"))
+       {
+           // Update the score and log a message to the console
+           gc.UpdateScore(-10);
+           Debug.Log("Stuff out!!");
+           SoundManager.instance.PlaySFX("fail");
+       }
+       else if (other.CompareTag("Garbage"))
+       {
+           // Increment the garbage exit counter and check if it's reached the limit
+           garbageExitCounter++;
+           if (garbageExitCounter >= 6)
+           {
+               gc.UpdateScore(10);
+               Debug.Log("Garbage out!!");
+               SoundManager.instance.PlaySFX("corect");
+               // Game over logic here
+               gc.gameover = true;
+               Debug.Log("Game over!");
+               // You can call a function to display a game over screen or reset the level, for example
+           }
+           else
+           {
+               // Update the score and log a message to the console
+               gc.UpdateScore(10);
+               Debug.Log("Garbage out!!");
+               SoundManager.instance.PlaySFX("corect");
+           }
+       }
+   }
 
-        }
-        else if (other.CompareTag("Garbage"))
-        {
-            // Update the score and log a message to the console
-            gc.UpdateScore(10);
-            Debug.Log("Garbage out!!");
-            SoundManager.instance.PlaySFX("corect");
-
-        }
-    }
 
     // Respawn the player after a delay and disable player control
     private IEnumerator RespawnAfterDelay(GameObject player)

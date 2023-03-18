@@ -11,7 +11,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject gameOverObject;
     private BallController bc;
     public float timeRemaining = 180f; // 3 minutes in seconds
-    private bool gameover = false;
+    public bool gameover = false;
     private int score = 0;
 
     private void Start()
@@ -23,6 +23,12 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
+        if (gameover == true)
+        {
+            Gameover();
+            return; // freeze timer if game over
+        }
+
         if (timeRemaining > 0)
         {
             timeRemaining -= Time.deltaTime;
@@ -35,7 +41,6 @@ public class GameController : MonoBehaviour
             UpdateCountdownText();
             // TODO: Do something when the timer reaches 0
             gameover = true;
-            Gameover(); // check if game over
         }
     }
 
@@ -62,6 +67,6 @@ public class GameController : MonoBehaviour
         bc.canControl = false; // disable player control
         bc.GetComponent<Rigidbody>().velocity = Vector3.zero; // delete all forces on the ball
         bc.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        gameOverObject.SetActive(true); // show the game over object  
+        gameOverObject.SetActive(true); // show the game over object     
     }
 }
