@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class GameController : MonoBehaviour
 {
@@ -11,27 +12,25 @@ public class GameController : MonoBehaviour
     [SerializeField] private TMP_Text scoreTextMeshPro2;
     [SerializeField] private TMP_Text countdownText2;
     [SerializeField] private GameObject gameOverObject;
-    [SerializeField] private GameObject pauseObject;
     private BallController bc;
     public float timeRemaining = 180f; // 3 minutes in seconds
     public bool gameover = false;
-    public bool paused = false;
     private int score = 0;
 
     private void Start()
     {
         UpdateScore(0);
         gameOverObject.SetActive(false); // hide the game over object at the start
-        pauseObject.SetActive(false); // hide the pause object at the start
         bc = FindObjectOfType<BallController>(); // find the BallController component and assign it to bc
         scoreTextMeshPro2.text = scoreTextMeshPro.text; // copy scoreTextMeshPro to scoreTextMeshPro2
     }
 
     private void Update()
     {
-        if (gameover == true || paused == true)
+        if (gameover == true)
         {
-            return; // freeze timer if game over or paused
+            Gameover();
+            return; // freeze timer if game over
         }
 
         if (timeRemaining > 0)
@@ -46,19 +45,11 @@ public class GameController : MonoBehaviour
             UpdateCountdownText();
             // TODO: Do something when the timer reaches 0
             gameover = true;
-            Gameover();
         }
 
         if (Input.GetKey(KeyCode.Escape))
         {
-            if (paused == false)
-            {
-                PauseGame();
-            }
-            else
-            {
-                ResumeGame();
-            }
+            
         }
     }
 
@@ -92,19 +83,7 @@ public class GameController : MonoBehaviour
         // hide the score and countdown text
         scoreTextMeshPro.gameObject.SetActive(false);
         countdownText.gameObject.SetActive(false);
+        
     }
     
-    private void PauseGame()
-    {
-        paused = true;
-        Time.timeScale = 0;
-        pauseObject.SetActive(true);
-    }
-    
-     public void ResumeGame()
-    {
-        paused = false;
-        Time.timeScale = 1;
-        pauseObject.SetActive(false);
-    }
 }
